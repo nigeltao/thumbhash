@@ -139,14 +139,16 @@ export function thumbHashToRGBA(hash) {
   let h = round(ratio > 1 ? 32 / ratio : 32)
   let rgba = new Uint8Array(w * h * 4), fx = [], fy = []
   for (let y = 0, i = 0; y < h; y++) {
+    // Precompute the fy coefficients
+    for (let cy = 0, n = max(ly, hasAlpha ? 5 : 3); cy < n; cy++)
+      fy[cy] = cos(PI / h * (y + 0.5) * cy)
+
     for (let x = 0; x < w; x++, i += 4) {
       let l = l_dc, p = p_dc, q = q_dc, a = a_dc
 
-      // Precompute the coefficients
+      // Precompute the fx coefficients
       for (let cx = 0, n = max(lx, hasAlpha ? 5 : 3); cx < n; cx++)
         fx[cx] = cos(PI / w * (x + 0.5) * cx)
-      for (let cy = 0, n = max(ly, hasAlpha ? 5 : 3); cy < n; cy++)
-        fy[cy] = cos(PI / h * (y + 0.5) * cy)
 
       // Decode L
       for (let cy = 0, j = 0; cy < ly; cy++)
